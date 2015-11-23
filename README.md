@@ -1,7 +1,9 @@
-# OV BS
-Vores Oversætter Grupperopgaver
+# OV Reporsitory
+Our "Introduction to Compilers(OV)" Group Project.
 
-## How To Use Git with GitHub
+#### Link til Live Rapport Edit: https://www.overleaf.com/3757030hphgsx
+
+### How To Use Git with GitHub
 
 ###### Install Git Package on Debian
 * sudo apt-get install git-core
