@@ -14,8 +14,7 @@ Run the following commands to add a SSH Key to your SSH-agent so you can use git
 * ssh-keygen -t rsa -b 4096 -C "your_email@example.com" // Generates a new SSH-key both private and public
 * ssh-add ~/.ssh/fileNameYouJustCreated // Give this the file you just created, which is NOT ".pub"
 * Now go to github and add a SSH Key, you must paste the contents from fileNameYouJustCreated.pub into github
-
-* https://help.github.com/articles/generating-ssh-keys/
+Source: https://help.github.com/articles/generating-ssh-keys/
 
 ###### Download repository from github
 * git clone git@github.com:PtxDK/OV.git
