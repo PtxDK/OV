@@ -9,6 +9,12 @@ Our "Introduction to Compilers(OV)" Group Project.
 * sudo apt-get install git-core
 
 ###### Add a SSH Key
+Run the following commands to add a SSH Key to your SSH-agent so you can use git without logging in again and again.
+* ls -al ~/.ssh  // Gives you a list of the SSH key folder
+* ssh-keygen -t rsa -b 4096 -C "your_email@example.com" // Generates a new SSH-key both private and public
+* ssh-add ~/.ssh/fileNameYouJustCreated // Give this the file you just created, which is NOT ".pub"
+* Now go to github and add a SSH Key, you must paste the contents from fileNameYouJustCreated.pub into github
+
 * https://help.github.com/articles/generating-ssh-keys/
 
 ###### Download repository from github
