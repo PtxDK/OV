@@ -1,7 +1,5 @@
-# OV
+# OV BS
 Vores Oversætter Grupperopgaver
-
-# ARK-G-Assignments
 
 ## How To Use Git with GitHub
 
