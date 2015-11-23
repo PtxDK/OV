@@ -8,6 +8,9 @@ Vores Oversætter Grupperopgaver
 ###### Install Git Package on Debian
 * sudo apt-get install git-core
 
+###### Add a SSH Key
+* https://help.github.com/articles/generating-ssh-keys/
+
 ###### Download repository from github
 * git clone git@github.com:PtxDK/OV.git
 
