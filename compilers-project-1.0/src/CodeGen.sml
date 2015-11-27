@@ -232,9 +232,21 @@ fun compileExp e vtable place =
       end
 
   | Times (e1, e2, pos) =>
-    raise Fail "Unimplemented feature multiplication"
+      let val t1 = newName "times_L"
+          val t2 = newName "times_R"
+          val code1 = compileExp e1 vtable t1
+          val code2 = compileExp e2 vtable t2
+      in  code1 @ code2 @ [Mips.MUL (place,t1,t2)]
+      end
+
   | Divide (e1, e2, pos) =>
-    raise Fail "Unimplemented feature division"
+      let val t1 = newName "minus_L"
+          val t2 = newName "minus_R"
+          val code1 = compileExp e1 vtable t1
+          val code2 = compileExp e2 vtable t2
+      in  code1 @ code2 @ [Mips.DIV (place,t1,t2)]
+      end
+
   | Not (e', pos) =>
     raise Fail "Unimplemented feature not"
   | Negate (e', pos) =>

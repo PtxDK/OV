@@ -154,10 +154,20 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
         end
 
   | evalExp ( Times(e1, e2, pos), vtab, ftab ) =
-    raise Fail "Unimplemented feature multiplication"    
+    let val res1 = evalExp(e1, vtab, ftab)
+        val res2 = evalExp(e2, vtab, ftab)
+    in case(res1, res2) of
+           (IntVal n1, IntVal n2) => Intval (n1*n2)
+         | _ => invalidOperands "Times on non-integral args" [(Int, Int)] res1 res2 pos
+               end
 
   | evalExp ( Divide(e1, e2, pos), vtab, ftab ) =
-    raise Fail "Unimplemented feature division"    
+    let val res1 = evalExp(e1, vtab, ftab)
+        val res2 = evalExp(e2, vtab, ftab)
+    in case(res1, res2) of
+           (IntVal n1, Intval n2) => Intval (n1 div n2)
+         | _ => invalidOperands "Divide on non-integral args" [(Int, Int)] res1 res2 pos
+               end
 
   | evalExp (And (e1, e2, pos), vtab, ftab) =
     raise Fail "Unimplemented feature &&"    
