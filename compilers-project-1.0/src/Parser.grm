@@ -15,6 +15,7 @@ open Fasto.UnknownTypes
 %token <(int*int)> LPAR RPAR LBRACKET RBRACKET LCURLY RCURLY
 %token <(int*int)> COMMA
 %token <(int*int)> FUN READ WRITE
+%token <(int*int)> TRUE FALSE TIMES DIVIDE
 
 %nonassoc ifprec letprec
 %left OR
@@ -59,6 +60,8 @@ Params : Type ID COMMA Params
 
 Exp :     NUM            { Constant (IntVal (#1 $1), #2 $1) }
         | CHARLIT        { Constant (CharVal (#1 $1), #2 $1) }
+        | TRUE           { Constant (BoolVal true, $1)}
+        | FALSE          { Constant (BoolVal false, $1)}
         | ID             { Var $1 }
         | STRINGLIT      { StringLit $1 }
         | LCURLY Exps RCURLY
