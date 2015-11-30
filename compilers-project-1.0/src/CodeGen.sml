@@ -397,7 +397,7 @@ fun compileExp e vtable place =
   | Or (e1, e2, pos) =>
     raise Fail "Unimplemented feature ||"
 
-  (* Indexing:
+  (*
      1. generate code to compute the index
      2. check index within bounds
      3. add the start address with the index

@@ -170,25 +170,18 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
                end
 
   | evalExp (And (e1, e2, pos), vtab, ftab) =
-    let val res1 = evalExp(e1, vtab, ftab)
-        val res2 = evalExp(e2, vtab, ftab)
-    in case(res1, res2) of
-           (IntVal n1, IntVal n2) => IntVal (n1 and n2)
-         | (CharVal n1, CharVal n2)  => CharVal (n1 and n2)
-         | (BoolVal n1, BoolVal n2) => BoolVal (n1 and n2)
-         | _ => invalidOperands "Divide on non-matching args" [(Int, Int)] res1 res2 pos
-    end
+    ( case (evalExp(e1, vtab, ftab)) of
+           BoolVal true => evalExp(e2, vtab, ftab)
+         | BoolVal false => BoolVal false
+         | _ => raise Fail "Operand to and is not a boolean"
+    )
 
   | evalExp (Or (e1, e2, pos), vtab, ftab) =
-      | evalExp (And (e1, e2, pos), vtab, ftab) =
-    let val res1 = evalExp(e1, vtab, ftab)
-        val res2 = evalExp(e2, vtab, ftab)
-    in case(res1, res2) of
-           (IntVal n1, IntVal n2) => IntVal (n1 or n2)
-         | (CharVal n1, CharVal n2)  => CharVal (n1 or n2)
-         | (BoolVal n1, BoolVal n2) => BoolVal (n1 or n2)
-         | _ => invalidOperands "Divide on non-matching args" [(Int, Int)] res1 res2 pos
-    end
+    ( case evalExp(e1, vtab, ftab) of
+        BoolVal true => BoolVal true
+       | BoolVal false => evalExp(e2, vtab, ftab)
+       | _ => raise Fail "Operand to or is not a boolean"
+    )
 
   | evalExp ( Not(e, pos), vtab, ftab ) =
     raise Fail "Unimplemented feature not"

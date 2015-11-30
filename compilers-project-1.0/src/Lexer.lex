@@ -45,7 +45,7 @@
               | "read"         => Parser.READ pos
               | "write"        => Parser.WRITE pos
               | _              => Parser.ID (s, pos)
- }
+              }
 
 rule Token = parse
     [` ` `\t` `\r`]+    { Token lexbuf } (* whitespace *)
@@ -80,8 +80,8 @@ rule Token = parse
   | "=="                { Parser.DEQ    (getPos lexbuf) }
   | `=`                 { Parser.EQ     (getPos lexbuf) }
   | `<`                 { Parser.LTH    (getPos lexbuf) }
-  | `and`               { Parser.AND    (getPos lexbuf) }
-  | `or`                { Parser.OR     (getPos lexbuf) }
+  | "and"               { Parser.AND    (getPos lexbuf) }
+  | "or"                { Parser.OR     (getPos lexbuf) }
   | `(`                 { Parser.LPAR   (getPos lexbuf) }
   | `)`                 { Parser.RPAR   (getPos lexbuf) }
   | `[`                 { Parser.LBRACKET (getPos lexbuf) }
