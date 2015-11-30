@@ -170,10 +170,25 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
                end
 
   | evalExp (And (e1, e2, pos), vtab, ftab) =
-    raise Fail "Unimplemented feature &&"    
+    let val res1 = evalExp(e1, vtab, ftab)
+        val res2 = evalExp(e2, vtab, ftab)
+    in case(res1, res2) of
+           (IntVal n1, IntVal n2) => IntVal (n1 and n2)
+         | (CharVal n1, CharVal n2)  => CharVal (n1 and n2)
+         | (BoolVal n1, BoolVal n2) => BoolVal (n1 and n2)
+         | _ => invalidOperands "Divide on non-matching args" [(Int, Int)] res1 res2 pos
+    end
 
   | evalExp (Or (e1, e2, pos), vtab, ftab) =
-    raise Fail "Unimplemented feature ||"
+      | evalExp (And (e1, e2, pos), vtab, ftab) =
+    let val res1 = evalExp(e1, vtab, ftab)
+        val res2 = evalExp(e2, vtab, ftab)
+    in case(res1, res2) of
+           (IntVal n1, IntVal n2) => IntVal (n1 or n2)
+         | (CharVal n1, CharVal n2)  => CharVal (n1 or n2)
+         | (BoolVal n1, BoolVal n2) => BoolVal (n1 or n2)
+         | _ => invalidOperands "Divide on non-matching args" [(Int, Int)] res1 res2 pos
+    end
 
   | evalExp ( Not(e, pos), vtab, ftab ) =
     raise Fail "Unimplemented feature not"

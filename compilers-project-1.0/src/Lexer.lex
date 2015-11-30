@@ -28,22 +28,23 @@
    be to encode every keyword as a regexp. This one is much easier. *)
  fun keyword (s, pos) =
      case s of
-         "if"           => Parser.IF pos
-       | "then"         => Parser.THEN pos
-       | "else"         => Parser.ELSE pos
-       | "let"          => Parser.LET pos
-       | "in"           => Parser.IN pos
-       | "int"          => Parser.INT pos
-       | "bool"         => Parser.BOOL pos
-       | "char"         => Parser.CHAR pos
-       | "fun"          => Parser.FUN pos
-       | "true"         => Parser.TRUE pos
-       | "false"        => Parser.FALSE pos
-(* specials: *)
-       | "read"         => Parser.READ pos
-       | "write"        => Parser.WRITE pos
-       | _              => Parser.ID (s, pos)
-
+              "if"           => Parser.IF pos
+              | "then"         => Parser.THEN pos
+              | "else"         => Parser.ELSE pos
+              | "let"          => Parser.LET pos
+              | "in"           => Parser.IN pos
+              | "int"          => Parser.INT pos
+              | "bool"         => Parser.BOOL pos
+              | "char"         => Parser.CHAR pos
+              | "fun"          => Parser.FUN pos
+              | "true"         => Parser.TRUE pos
+              | "false"        => Parser.FALSE pos
+              | "and"          => Parser.AND pos
+              | "or"           => Parser.OR pos
+              (* specials: *)
+              | "read"         => Parser.READ pos
+              | "write"        => Parser.WRITE pos
+              | _              => Parser.ID (s, pos)
  }
 
 rule Token = parse
@@ -79,12 +80,14 @@ rule Token = parse
   | "=="                { Parser.DEQ    (getPos lexbuf) }
   | `=`                 { Parser.EQ     (getPos lexbuf) }
   | `<`                 { Parser.LTH    (getPos lexbuf) }
+  | `and`               { Parser.AND    (getPos lexbuf) }
+  | `or`                { Parser.OR     (getPos lexbuf) }
   | `(`                 { Parser.LPAR   (getPos lexbuf) }
   | `)`                 { Parser.RPAR   (getPos lexbuf) }
   | `[`                 { Parser.LBRACKET (getPos lexbuf) }
   | `]`                 { Parser.RBRACKET (getPos lexbuf) }
   | `{`                 { Parser.LCURLY (getPos lexbuf) }
   | `}`                 { Parser.RCURLY (getPos lexbuf) }
-  | `,`                 { Parser.COMMA (getPos lexbuf) }
-  | eof                 { Parser.EOF (getPos lexbuf) }
+  | `,`                 { Parser.COMMA  (getPos lexbuf) }
+  | eof                 { Parser.EOF    (getPos lexbuf) }
   | _                   { lexerError lexbuf "Illegal symbol in input" };
