@@ -131,13 +131,13 @@ and checkExp ftab vtab (exp : In.Exp)
     | In.Not (e, pos) (* Not implemented correctly yet! *)
       => let val (_, e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Bool, e, e)
          in (Bool,
-             Out.Or (e1_dec, e1_dec, pos))
+             Out.Not (e1_dec, e1_dec, pos))
          end
 
     | In.Negate (e, pos) (* Not implemented correctly yet! *)
       => let val (_, e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Int, e, e)
          in (Bool,
-             Out.Or (e1_dec, e1_dec, pos))
+             Out.Negate (e1_dec, e1_dec, pos))
          end
 
     (* The types for e1, e2 must be the same. The result is always a Bool. *)
