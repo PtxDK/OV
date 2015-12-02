@@ -119,13 +119,13 @@ and checkExp ftab vtab (exp : In.Exp)
     | In.And (e1, e2, pos) (* Not implemented correctly yet! *)
       => let val (_, e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Bool, e1, e2)
          in (Bool,
-             Out.Plus (e1_dec, e2_dec, pos))
+             Out.And (e1_dec, e2_dec, pos))
          end
 
     | In.Or (e1, e2, pos) (* Not implemented correctly yet! *)
       => let val (_, e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Bool, e1, e2)
          in (Bool,
-             Out.Plus (e1_dec, e2_dec, pos))
+             Out.Or (e1_dec, e2_dec, pos))
          end
 
     | In.Not (e, pos) (* Not implemented correctly yet! *)
