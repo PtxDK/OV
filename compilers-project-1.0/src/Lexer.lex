@@ -41,6 +41,8 @@
               | "false"        => Parser.FALSE pos
               | "and"          => Parser.AND pos
               | "or"           => Parser.OR pos
+              | "not"          => Parser.NOT pos
+              | "negate"       => Parser.NEGATE pos
               (* specials: *)
               | "read"         => Parser.READ pos
               | "write"        => Parser.WRITE pos
@@ -82,6 +84,8 @@ rule Token = parse
   | `<`                 { Parser.LTH    (getPos lexbuf) }
   | "and"               { Parser.AND    (getPos lexbuf) }
   | "or"                { Parser.OR     (getPos lexbuf) }
+  | "not"               { Parser.NOT    (getPos lexbuf) }
+  | "negate"            {Parser.NEGATE  (getPos lexbuf) }
   | `(`                 { Parser.LPAR   (getPos lexbuf) }
   | `)`                 { Parser.RPAR   (getPos lexbuf) }
   | `[`                 { Parser.LBRACKET (getPos lexbuf) }
