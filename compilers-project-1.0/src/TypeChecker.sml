@@ -116,17 +116,22 @@ and checkExp ftab vtab (exp : In.Exp)
              Out.Divide (e1_dec, e2_dec, pos))
          end
 
+    | In.And (e1, e2, pos) (* Not implemented correctly yet! *)
+      => let val (_, e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Bool, e1, e2)
+         in (Bool,
+             Out.Plus (e1_dec, e2_dec, pos))
+         end
 
-    | In.And (e1, e2, pos)
-      => raise Fail "Unimplemented feature &&"
+    | In.Or (e1, e2, pos) (* Not implemented correctly yet! *)
+      => let val (_, e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Bool, e1, e2)
+         in (Bool,
+             Out.Plus (e1_dec, e2_dec, pos))
+         end
 
-    | In.Or (e1, e2, pos)
-      => raise Fail "Unimplemented feature ||"
-
-    | In.Not (e, pos)
+    | In.Not (e, pos) (* Not implemented correctly yet! *)
       => raise Fail "Unimplemented feature not"
 
-    | In.Negate (e, pos)
+    | In.Negate (e, pos) (* Not implemented correctly yet! *)
       => raise Fail "Unimplemented feature negate"
 
     (* The types for e1, e2 must be the same. The result is always a Bool. *)
