@@ -187,13 +187,13 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
     (case evalExp(e, vtab, ftab) of
          BoolVal true => BoolVal false
        | BoolVal false => BoolVal true
-       | _ => raise Fail "Not requires a type of BoolVal")
+       | _ => raise Error ("Not requires a type of BoolVal", pos))
 
 
   | evalExp ( Negate(e, pos), vtab, ftab ) =
     (case evalExp(e, vtab, ftab) of
          IntVal n  => IntVal (~(n))
-       | _ => raise Fail "Negate requires an IntVal")
+       | _ => raise Error ("Negate requires an IntVal", pos))
 
 
   | evalExp ( Equal(e1, e2, pos), vtab, ftab ) =
