@@ -46,6 +46,7 @@
               (* specials: *)
               | "read"         => Parser.READ pos
               | "write"        => Parser.WRITE pos
+              | "iota"         => Parser.IOTA pos
               | _              => Parser.ID (s, pos)
               }
 

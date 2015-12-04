@@ -189,14 +189,12 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
        | BoolVal false => BoolVal true
        | _ => raise Fail "Not requires a type of BoolVal")
 
+
   | evalExp ( Negate(e, pos), vtab, ftab ) =
-    let val res = evalExp(e1, vtab, ftab)
-    in case (res) of
-           (IntVal n = 0) => IntVal (n)
-         | IntVal n > 0 => IntVal (-n)
-         | IntVal n < 0 => IntVal (n-n-n)
-         | _ => raise Fail "Negate requires an IntVal"
-    end
+    (case evalExp(e, vtab, ftab) of
+         IntVal n  => IntVal (~(n))
+       | _ => raise Fail "Negate requires an IntVal")
+
 
   | evalExp ( Equal(e1, e2, pos), vtab, ftab ) =
         let val r1 = evalExp(e1, vtab, ftab)
@@ -258,7 +256,16 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
         end
 
   | evalExp ( Iota (e, pos), vtab, ftab ) =
-    raise Fail "Unimplemented feature iota"
+    let val sz = evalExp(e, vtab, ftab)
+    in case sz of
+           IntVal size =>
+           if size >= 0
+           then ArrayVal (List.tabulate(size, (fn x => IntVal x)),
+                          Int)
+           else raise Error("Error: in iota call, size is negative:"
+                            ^ Int.toString(size), pos)
+         | _ => raise Error("Iota argument i not a number:" ^ppVal 0 sz, pos)
+    end
 
   | evalExp ( Map (farg, arrexp, _, _, pos), vtab, ftab ) =
     raise Fail "Unimplemented feature map"

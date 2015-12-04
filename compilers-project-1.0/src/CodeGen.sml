@@ -247,10 +247,22 @@ fun compileExp e vtable place =
       in  code1 @ code2 @ [Mips.DIV (place,t1,t2)]
       end
 
-  | Not (e', pos) =>
-    raise Fail "Unimplemented feature not"
+
+  | Not (e, pos) =>
+    let val t1 = newName "Not_var"
+        val t2 = newName "temp1"
+        val code1 = compileExp e vtable t1
+    in  code1 @
+        [Mips.XORI (place,"1","t1")]
+    end
+
+
   | Negate (e', pos) =>
-    raise Fail "Unimplemented feature negate"
+        let val t1 = newName "Negate_var"
+        val code1 = compileExp e vtable t1
+    in  code1 @
+        [Mips.SUB (place, "0", t1)]
+    end
 
   | Let (dec, e1, pos) =>
       let val (code1, vtable1) = compileDec dec vtable
@@ -406,7 +418,7 @@ fun compileExp e vtable place =
                Mips.LABEL falseLabel,
                Mips.LI (place, "0")]
           end
-              
+
   | Or (e1, e2, pos) =>
               let val t1 = newName "or_L"
           val t2 = newName "or_R"
@@ -462,7 +474,58 @@ fun compileExp e vtable place =
      iota, map, reduce
   *)
   | Iota (n_exp, pos as (line, _)) =>
-    raise Fail "Unimplemented feature iota"
+    let val size_reg =newName "size_reg"
+        val n_code = compileExp n_exp vtable size_reg
+          (* size_reg is now the integer n.*)
+
+          (* check that array size N >= 0:
+             if N -1 >= 0 then jumpto safe_lab
+             jumpto "_illegalArrSiizeError_"
+             safe_lab: ...
+           *)
+        val safe_lab = newName "safe_lab"
+        val checksize = [ Mips.ADDI (size_reg, size_reg, "-1")
+                        , Mips.BGEZ (size_reg, safe_lab)
+                        , Mips.LI ("5", makeConst line)
+                        , Mips.J "_IllegalArrSizeError_"
+                        , Mips.LABEL (safe_lab)
+                        , Mips.ADDI (size_reg, size_reg, "1")
+                        ]
+        val addr_reg = newName "addr_reg"
+        val i_reg = newName "i_reg"
+        val init_regs = [ Mips.ADDI (addr_reg, place, "4")
+                        , Mips.MOVE (i_reg, "0")
+                        ]
+          (*addr_reg is now the position of the firs array element.*)
+
+          (*run a loop. Keep jumping back to the loop_beq until it is not the
+            case that i_reg < size_reg, and then jump to loop_end.*)
+
+        val loop_beq = newName "loop_beq"
+        val loop_end = newName "loop_end"
+        val tmp_reg = newName "tmp_reg"
+        val loop_header = [ Mips.LABEL (loop_beq)
+                          , Mips.SUB (tmp_reg, i_reg, size_reg)
+                          , Mips.BGEZ (tmp_reg, loop_end)
+                          ]
+
+          (*iota is just 'arr[i] = i'. arr[i] is addr_reg.*)
+        val loop_iota = [ Mips.SW (i_reg, addr_reg, "0")]
+
+        val loop_footer = [ Mips.ADDI (addr_reg, addr_reg, "4")
+                          , Mips.ADDI (i_reg, i_reg, "1")
+                          , Mips.J loop_beq
+                          , Mips.LABEL loop_end
+                          ]
+
+    in n_code
+       @ checksize
+       @ dynalloc (size_reg, place, Int)
+       @ init_regs
+       @ loop_header
+       @ loop_iota
+       @ loop_footer
+    end
 
   | Map (farg, arr_exp, elem_type, ret_type, pos) =>
     raise Fail "Unimplemented feature map"
