@@ -165,7 +165,7 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
     let val res1 = evalExp(e1, vtab, ftab)
         val res2 = evalExp(e2, vtab, ftab)
     in case(res1, res2) of
-           (IntVal n1, IntVal n2) => IntVal (n1 div n2)
+           (IntVal n1, IntVal n2) => IntVal (Int.quot(n1, n2))
          | _ => invalidOperands "Divide on non-integral args" [(Int, Int)] res1 res2 pos
     end
 
