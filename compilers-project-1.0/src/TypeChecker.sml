@@ -222,12 +222,35 @@ and checkExp ftab vtab (exp : In.Exp)
       => let val (e_type, n_exp_dec) = checkExp ftab vtab n_exp
          in if e_type = Int
             then (Array Int, Out.Iota (n_exp_dec, pos))
-            else raise Error ("Iota: wrog argument type " ^
+            else raise Error ("Iota: wrong argument type " ^
                               ppType e_type, pos)
          end
 
+
     | In.Map (f, arr_exp, _, _, pos)
-      => raise Fail "Unimplemented feature map"
+      => let val (f', r_type, arg_types) = checkFunArg(f, vtab, ftab, pos)
+             val (arraytype', arr_exp_type) = checkExp ftab vtab arr_exp
+         in
+           ( case CheckExp(ftab, vtab, arr_exp) of
+                 Array(t) => t
+               | _ => raise Error ("Map: Wrong argument type " ^ ppType arraytype', pos))
+         end
+
+
+
+(*    | In.Map (f, arr_exp, _, _, pos)
+      => let val (f', rtp, argtps) = checkFunArg(f, vtable, ftable, pos) (* f' =name, rtp = returntype *)
+             val (arraytype', arr_exp_type) = checkExp ftab vtab arr_exp
+             val arrayelementtype = (
+               case arraytype' of
+                   Array(t) => t
+                 | _ => raise Error ("Map: Wrong argument type " ^ ppType arraytype', pos))
+                                        case argtps of
+                                            Array(t).length == 1 => 1
+*)
+(* NOT DONE YET *)
+
+
 
     | In.Reduce (f, n_exp, arr_exp, _, pos)
       => raise Fail "Unimplemented feature reduce"

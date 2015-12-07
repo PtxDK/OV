@@ -530,6 +530,8 @@ fun compileExp e vtable place =
        @ loop_footer
     end
 
+
+        
   | Map (farg, arr_exp, elem_type, ret_type, pos) =>
     
     raise Fail "Unimplemented feature map"
