@@ -43,10 +43,11 @@
               | "or"           => Parser.OR pos
               | "not"          => Parser.NOT pos
               | "negate"       => Parser.NEGATE pos
+              | "iota"         => Parser.IOTA pos
+              | "map"          => Parser.MAP pos
               (* specials: *)
               | "read"         => Parser.READ pos
               | "write"        => Parser.WRITE pos
-              | "iota"         => Parser.IOTA pos
               | _              => Parser.ID (s, pos)
               }
 

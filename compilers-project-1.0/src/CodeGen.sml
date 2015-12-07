@@ -409,14 +409,16 @@ fun compileExp e vtable place =
           val t2 = newName "and_R"
           val code1 = compileExp e1 vtable t1
           val code2 = compileExp e2 vtable t2
-          val falseLabel = newName "false"
+          val check2 = newName "check2"
           val trueLabel = newName "true"
           in  code1 @
-              [Mips.BEQ("0",t1,falseLabel),
-               Mips.LI (place, "1")]@
-              [Mips.BEQ("0",t2,falseLabel),
-               Mips.LABEL falseLabel,
-               Mips.LI (place, "0")]
+              [Mips.BEQ("1",t1,check2),
+               Mips.LI(place, "0")]@
+              [Mips.LABEL check2,
+               Mips.BEQ("1",t2,trueLabel),
+               Mips.LI(place, "0")]@
+              [Mips.LABEL trueLabel,
+               Mips.LI (place, "1")]
           end
 
   | Or (e1, e2, pos) =>
@@ -432,7 +434,8 @@ fun compileExp e vtable place =
                Mips.LI (place, "1")]@
               [Mips.LABEL check2,
                Mips.BEQ("0",t2,falseLabel),
-               Mips.LABEL falseLabel,
+               Mips.LI (place, "1")]@
+              [Mips.LABEL falseLabel,
                Mips.LI (place, "0")]
           end
 
@@ -528,6 +531,7 @@ fun compileExp e vtable place =
     end
 
   | Map (farg, arr_exp, elem_type, ret_type, pos) =>
+    
     raise Fail "Unimplemented feature map"
 
   (* reduce(f, acc, {x1, x2, ...}) = f(..., f(x2, f(x1, acc))) *)
