@@ -45,6 +45,7 @@
               | "negate"       => Parser.NEGATE pos
               | "iota"         => Parser.IOTA pos
               | "map"          => Parser.MAP pos
+              | "reduce"       => Parser.REDUCE pos
               (* specials: *)
               | "read"         => Parser.READ pos
               | "write"        => Parser.WRITE pos

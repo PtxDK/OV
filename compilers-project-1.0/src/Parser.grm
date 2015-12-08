@@ -17,8 +17,8 @@ open Fasto.UnknownTypes
 %token <(int*int)> FUN READ WRITE
 %token <(int*int)> TRUE FALSE TIMES DIVIDE AND OR NOT NEGATE
 %token <(int*int)> RIGHTARROW FN FUNNAME
-%token <(int*int)> IOTA
-%token <(int*int)> MAP
+%token <(int*int)> IOTA MAP REDUCE
+
 
 
 %nonassoc ifprec letprec
@@ -93,6 +93,9 @@ Exp :     NUM            { Constant (IntVal (#1 $1), #2 $1) }
                        
         | MAP LPAR FunArg COMMA Exp RPAR 
                        { Map ($3, $5, (), (), $1) }
+
+        | REDUCE LPAR FunArg COMMA Exp COMMA Exp RPAR
+                       { Reduce ($3, $5, $7, (),$1)}
 
         | ID LPAR Exps RPAR
                         { Apply (#1 $1, $3, #2 $1) }
