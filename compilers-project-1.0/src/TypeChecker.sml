@@ -226,10 +226,6 @@ and checkExp ftab vtab (exp : In.Exp)
                               ppType e_type, pos)
          end
 
-
-
-
-
     | In.Map (f, arr_exp, _, _, pos)
           => let
                val (e_type, e_dec) = checkExp ftab vtab arr_exp
@@ -245,52 +241,6 @@ and checkExp ftab vtab (exp : In.Exp)
                            else raise Error ("The Array expression type does not match the function input type", pos))
               | _ => raise Error ("Map: function failed ", pos)
             end
-
-
-         
-
-   (*) | In.Map (f, arr_exp, _, _, pos)
-      => let val (arr_type, elm_same_type) = checkExp ftab vtab arr_exp
-             val (fname, ret_type, arg_types) = checkFunArg (f, vtab, ftab, pos)
-         in
-           case arr_type of
-              Array t  => if true then t       <-- Make check on type of elements  USE CASE!!
-                          else raise Error ("Map: Elements in array not same type", pos)
-
-            | _ => raise Error ("Map: Wrong argument type, not array, " ^ ppType arr_type, pos)
-        
-         end
-*)
-
-
-(* Map (farg, arrexp, _, _, pos), vtab, ftab ) *)
-
-
-(*
-    | In.Map (f, arr_exp, _, _, pos)
-      => let val (f', r_type, arg_types) = checkFunArg(f, vtab, ftab, pos)
-             val (arraytype', arr_exp_type) = checkExp ftab vtab arr_exp
-         in
-            (case CheckExp(ftab, vtab, arr_exp) of
-                 Array(t) => t
-               | _ => raise Error ("Map: Wrong argument type " ^ ppType arraytype', pos)
-            )
-         end
-*)
-
-(*    | In.Map (f, arr_exp, _, _, pos)
-      => let val (f', rtp, argtps) = checkFunArg(f, vtable, ftable, pos)
-             val (arraytype', arr_exp_type) = checkExp ftab vtab arr_exp
-             val arrayelementtype = (
-               case arraytype' of
-                   Array(t) => t
-                 | _ => raise Error ("Map: Wrong argument type " ^ ppType arraytype', pos))
-                                        case argtps of
-                                            Array(t).length == 1 => 1
-*)
-(* NOT DONE YET *)
-
-
 
     | In.Reduce (f, n_exp, arr_exp, _, pos)
       => raise Fail "Unimplemented feature reduce"
