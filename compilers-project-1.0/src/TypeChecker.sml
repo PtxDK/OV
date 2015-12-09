@@ -226,20 +226,37 @@ and checkExp ftab vtab (exp : In.Exp)
                               ppType e_type, pos)
          end
 
-
     | In.Map (f, arr_exp, _, _, pos)
-      => let val (f', r_type, arg_types) = checkFunArg(f, vtab, ftab, pos)
-             val (arraytype', arr_exp_type) = checkExp ftab vtab arr_exp
+      => let val (arr_type, elm_same_type) = checkExp ftab vtab arr_exp
+             val (fname, ret_type, arg_types) = checkFunArg (f, vtab, ftab, pos)
          in
-           ( case CheckExp(ftab, vtab, arr_exp) of
-                 Array(t) => t
-               | _ => raise Error ("Map: Wrong argument type " ^ ppType arraytype', pos))
+           case arr_type of
+              Array t  => if true then t (* <-- Make check on type of elements  USE CASE!!*)
+                          else raise Error ("Map: Elements in array not same type", pos)
+
+            | _ => raise Error ("Map: Wrong argument type, not array, " ^ ppType arr_type, pos)
+        
          end
 
 
 
+(* Map (farg, arrexp, _, _, pos), vtab, ftab ) *)
+
+
+(*
+    | In.Map (f, arr_exp, _, _, pos)
+      => let val (f', r_type, arg_types) = checkFunArg(f, vtab, ftab, pos)
+             val (arraytype', arr_exp_type) = checkExp ftab vtab arr_exp
+         in
+            (case CheckExp(ftab, vtab, arr_exp) of
+                 Array(t) => t
+               | _ => raise Error ("Map: Wrong argument type " ^ ppType arraytype', pos)
+            )
+         end
+*)
+
 (*    | In.Map (f, arr_exp, _, _, pos)
-      => let val (f', rtp, argtps) = checkFunArg(f, vtable, ftable, pos) (* f' =name, rtp = returntype *)
+      => let val (f', rtp, argtps) = checkFunArg(f, vtable, ftable, pos)
              val (arraytype', arr_exp_type) = checkExp ftab vtab arr_exp
              val arrayelementtype = (
                case arraytype' of
@@ -259,6 +276,7 @@ and checkFunArg (In.FunName fname, vtab, ftab, pos) =
     (case SymTab.lookup fname ftab of
          NONE             => raise Error ("Unknown identifier " ^ fname, pos)
        | SOME (ret_type, arg_types, _) => (Out.FunName fname, ret_type, arg_types))
+
   | checkFunArg (In.Lambda (rettype, params, body, funpos), vtab, ftab, pos) =
     let val lambda = In.FunDec ("<lambda>", rettype, params, body, funpos)
         val (Out.FunDec (_, _, _, body', _)) =
