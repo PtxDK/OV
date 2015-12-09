@@ -62,7 +62,7 @@ fun printable (Int) = true
 fun checkBinOp ftab vtab (pos, t, e1, e2) =
     let val (t1, e1') = checkExp ftab vtab e1
         val (t2, e2') = checkExp ftab vtab e2
-    in  if (t = t1 andalso t = t2)
+    in  if (t1 = t2)
         then (t, e1', e2')
         else raise Error ("In checkBinOp: types not equal "^ppType t^" and "^ppType t1^" and "^ppType t2, pos)
     end
@@ -136,7 +136,7 @@ and checkExp ftab vtab (exp : In.Exp)
 
     | In.Negate (e, pos) (* Not implemented correctly yet! *)
       => let val (_, e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Int, e, e)
-         in (Bool,
+         in (Int,
              Out.Negate (e1_dec, pos))
          end
 

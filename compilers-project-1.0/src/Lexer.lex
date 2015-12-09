@@ -85,10 +85,10 @@ rule Token = parse
   | "=="                { Parser.DEQ    (getPos lexbuf) }
   | `=`                 { Parser.EQ     (getPos lexbuf) }
   | `<`                 { Parser.LTH    (getPos lexbuf) }
-  | "and"               { Parser.AND    (getPos lexbuf) }
-  | "or"                { Parser.OR     (getPos lexbuf) }
+  | "&&"                { Parser.AND    (getPos lexbuf) }
+  | "||"                { Parser.OR     (getPos lexbuf) }
   | "not"               { Parser.NOT    (getPos lexbuf) }
-  | "negate"            {Parser.NEGATE  (getPos lexbuf) }
+  | "~"            { Parser.NEGATE  (getPos lexbuf) }
   | `(`                 { Parser.LPAR   (getPos lexbuf) }
   | `)`                 { Parser.RPAR   (getPos lexbuf) }
   | `[`                 { Parser.LBRACKET (getPos lexbuf) }
