@@ -237,13 +237,28 @@ and checkExp ftab vtab (exp : In.Exp)
             in
               case arg_types of
                 [t_in] => (if t_in = t_el
-                           then (Array ret_type, Out.Map(fname, e_dec, e_type, Array ret_type, pos))
+                           then (Array ret_type, Out.Map(FunName fname, e_dec, e_type, Array ret_type, pos))
                            else raise Error ("The Array expression type does not match the function input type", pos))
               | _ => raise Error ("Map: function failed ", pos)
             end
 
     | In.Reduce (f, n_exp, arr_exp, _, pos)
-      => raise Fail "Unimplemented feature reduce"
+      => let
+      val (n_type, n_dec) = checkExp ftab vtab n_exp
+      val (e_type, e_dec) = checkExp ftab vtab arr_exp
+      val (fname, ret_type, arg_types) = checkFunArg (f, vtab, fta, pos)
+      val t_el = (case e_type of
+                      Array e_type => e_type
+                    | _ => raise Error ("Reduce: wrong argument type" ^
+                                        ppType e_type, pos))
+      val t_n = (case n_type of
+                     IntVal => 0
+                   | _ => raise Error ("Reduce: wrong argument type" ^
+                                       ppType n_type, pos))
+    in
+      case arg_types of
+          [n] => n
+        |
 
 and checkFunArg (In.FunName fname, vtab, ftab, pos) =
     (case SymTab.lookup fname ftab of
