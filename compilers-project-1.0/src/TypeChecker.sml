@@ -226,18 +226,41 @@ and checkExp ftab vtab (exp : In.Exp)
                               ppType e_type, pos)
          end
 
+
+
+
+
     | In.Map (f, arr_exp, _, _, pos)
+          => let
+               val (e_type, e_dec) = checkExp ftab vtab arr_exp
+               val (fname, ret_type, arg_types) = checkFunArg (f, vtab, ftab, pos)
+               val t_el = (case e_type of
+                                Array e_type => e_type
+                              | _ => raise Error ("Map: wrong argument type " ^
+                                                   ppType e_type, pos))
+            in
+              case arg_types of
+                [t_in] => (if t_in = t_el
+                           then (Array ret_type, Out.Map(fname, e_dec, e_type, Array ret_type, pos))
+                           else raise Error ("The Array expression type does not match the function input type", pos))
+              | _ => raise Error ("Map: function failed ", pos)
+            end
+
+
+         
+
+   (*) | In.Map (f, arr_exp, _, _, pos)
       => let val (arr_type, elm_same_type) = checkExp ftab vtab arr_exp
              val (fname, ret_type, arg_types) = checkFunArg (f, vtab, ftab, pos)
          in
            case arr_type of
-              Array t  => if true then t (* <-- Make check on type of elements  USE CASE!!*)
+              Array t  => if true then t       <-- Make check on type of elements  USE CASE!!
                           else raise Error ("Map: Elements in array not same type", pos)
 
             | _ => raise Error ("Map: Wrong argument type, not array, " ^ ppType arr_type, pos)
         
          end
-
+*)
 
 
 (* Map (farg, arrexp, _, _, pos), vtab, ftab ) *)
