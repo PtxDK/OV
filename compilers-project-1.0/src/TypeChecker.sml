@@ -237,36 +237,69 @@ and checkExp ftab vtab (exp : In.Exp)
             in
               case arg_types of
                 [t_in] => (if t_in = t_el
-                           then (Array ret_type, Out.Map(FunName fname, e_dec, e_type, Array ret_type, pos))
+                           then (Array ret_type, Out.Map(fname, e_dec, e_type, Array ret_type, pos))
                            else raise Error ("The Array expression type does not match the function input type", pos))
               | _ => raise Error ("Map: function failed ", pos)
             end
 
     | In.Reduce (f, n_exp, arr_exp, _, pos)
       => let
+    	    val (n_type, n_dec) = case checkExp ftab vtab n_exp of (* Return type of n *)
+    	    	t => t
+
+    	    val (e_type, e_dec) = case checkExp ftab vtab arr_exp of (*Return the type the array contains*)
+    	    	(Array e_type, e_dec) => (e_type, e_dec)
+    	    | _	=> raise Error ("Must be zero ", pos)
+
+    	    val (fname, ret_type, arg_types) = case checkFunArg (f, vtab, ftab, pos) of (*return type of ret_type*)
+    	    	(fname, ret_type, arg_types) => (fname, ret_type, arg_types)
+
+    	  in
+    	  	
+    	  	if n_type <> e_type
+    	  		then raise Error ("Bad types ", pos)
+    	  	else
+
+	    	  	if n_type <> ret_type 
+	    	  		then raise Error ("Bad types ", pos)
+	    	  	else
+
+		    	  	if foldl (fn (x, y) => n_type = x orelse y) false arg_types
+		    	  		then raise Error ("Bad types ", pos)
+
+		  	  		else (Array ret_type, Out.Reduce(fname, n_dec, e_dec, e_type, pos) )
+
+    	  end
+
+ (*      | evalExp ( Reduce (farg, ne, arrexp, tp, pos), vtab, ftab )         *) 
+
+
+
+
+
+ 		(* let
       val (n_type, n_dec) = checkExp ftab vtab n_exp
       val (e_type, e_dec) = checkExp ftab vtab arr_exp
-      val (fname, ret_type, arg_types) = checkFunArg (f, vtab, fta, pos)
-      val t_el = (case e_type of
-                      Array e_type => e_type
-                    | _ => raise Error ("Reduce: wrong argument type" ^
+      val (fname, ret_type, arg_types) = checkFunArg (f, vtab, ftab, pos)
+      val t_el = (
+      	case e_type of
+          Array e_type => e_type
+        | _ => raise Error ("Reduce: wrong argument type" ^
                                         ppType e_type, pos))
-      val t_n = (case n_type of
-                     IntVal => 0
-                   | _ => raise Error ("Reduce: wrong argument type" ^
-                                       ppType n_type, pos))
-    in
-
-      (case arg_types of
-        [t_in] => (
-          if t_in = t_el
+      val t_n = (
+      	case (n_type, n_dec) of
+         0 => IntVal 0
+       | _ => raise Error ("Reduce: wrong argument type" ^ ppType n_type, pos))
+	  in (
+	  	case arg_types of
+          [t_in] => (
+          	if t_in = t_el
             then (Array ret_type, Out.Map(FunName fname, e_dec, e_type, Array ret_type, pos))
           else raise Error ("The Array expression type does not match the function input type", pos)
         )
       )
     end
-
-
+*)
 
 and checkFunArg (In.FunName fname, vtab, ftab, pos) =
     (case SymTab.lookup fname ftab of
