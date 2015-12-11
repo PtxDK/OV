@@ -256,9 +256,17 @@ and checkExp ftab vtab (exp : In.Exp)
                    | _ => raise Error ("Reduce: wrong argument type" ^
                                        ppType n_type, pos))
     in
-      case arg_types of
-          [] => n
-        |
+
+      (case arg_types of
+        [t_in] => (
+          if t_in = t_el
+            then (Array ret_type, Out.Map(FunName fname, e_dec, e_type, Array ret_type, pos))
+          else raise Error ("The Array expression type does not match the function input type", pos)
+        )
+      )
+    end
+
+
 
 and checkFunArg (In.FunName fname, vtab, ftab, pos) =
     (case SymTab.lookup fname ftab of
