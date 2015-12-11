@@ -535,6 +535,26 @@ fun compileExp e vtable place =
   | Map (farg, arr_exp, elem_type, ret_type, pos) =>
 (* raise Fail "Unimplemented feature map" *)
 
+
+(* STEPS TIL AT DESIGNE MAP:
+  
+  Map(f, arr, exp, vtable)
+
+1: Code_arr = compExp arr.exp vtable [in_reg]
+2: get the length of the input array
+
+    {LW (len_reg, in_reg, "0")}
+
+3:  code_3 = dynalloc (len_reg, place, rtp)
+4:  [ADDI (out_it, place, "4")]
+    ADDI (in_reg, in_reg, "4")
+
+5: Loop: Read the current element of it_reg
+         applyFunArg on the current element
+         store result in the current element of out_it
+         increment it_reg, increment out_reg
+*)
+
     let val size_reg =newName "size_reg"
         val n_code = compileExp arr_exp vtable size_reg (* Liste af instruktioner *)
 
