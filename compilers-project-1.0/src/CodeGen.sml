@@ -531,10 +531,54 @@ fun compileExp e vtable place =
     end
 
 
-        
+
   | Map (farg, arr_exp, elem_type, ret_type, pos) =>
-    
-    raise Fail "Unimplemented feature map"
+(* raise Fail "Unimplemented feature map" *)
+
+    let val size_reg =newName "size_reg"
+        val n_code = compileExp arr_exp vtable size_reg (* Liste af instruktioner *)
+
+
+        (* Copy Pasta fra Apply *)
+          (* Convention: args in regs (2..15), result in reg 2 *)
+        fun compileArg arg =
+            let val arg_reg = newName "arg"
+            in (arg_reg,
+                compileExp arg vtable arg_reg)
+            end
+        val (arg_regs, argcode) = ListPair.unzip (map compileArg args)
+        val applyCode = applyRegs(f, arg_regs, place, pos)
+
+
+
+        (* Copy Pasta fra Iota *)
+        val loop_header = [ Mips.LABEL (loop_beq)
+                          , Mips.SUB (tmp_reg, i_reg, size_reg)
+                          , Mips.BGEZ (tmp_reg, loop_end)
+                          ]
+
+          (*iota is just 'arr[i] = i'. arr[i] is addr_reg.*)
+        val loop_map = [ Mips.SW (i_reg, addr_reg, "0")]
+
+        val loop_footer = [ Mips.ADDI (addr_reg, addr_reg, "4")
+                          , Mips.ADDI (i_reg, i_reg, "1")
+                          , Mips.J loop_beq
+                          , Mips.LABEL loop_end
+                          ]
+
+
+
+    in (*n_code
+       @ dynalloc (size_reg, place, Int)
+       @ init_regs
+       @ loop_header
+       @ loop_map
+       @ loop_footer *)
+
+       List.concat argcode @  (* Evaluate args *)
+       applyCode              (* Jump to function and store result in place *)
+    end
+
 
   (* reduce(f, acc, {x1, x2, ...}) = f(..., f(x2, f(x1, acc))) *)
   | Reduce (binop, acc_exp, arr_exp, tp, pos) =>
