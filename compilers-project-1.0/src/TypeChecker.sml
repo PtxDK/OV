@@ -257,7 +257,7 @@ and checkExp ftab vtab (exp : In.Exp)
                                        ppType n_type, pos))
     in
       case arg_types of
-          [n] => n
+          [] => n
         |
 
 and checkFunArg (In.FunName fname, vtab, ftab, pos) =

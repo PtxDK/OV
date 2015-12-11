@@ -268,7 +268,13 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
     end
 
   | evalExp ( Map (farg, arrexp, _, _, pos), vtab, ftab ) =
-    raise Fail "Unimplemented feature map"
+    let val arr = evalExp(arrexp, vtab, ftab)
+        val fdcl = FunDec("anon", rtp, aargs, body)
+    in case arr of
+           Arraylit (expList,TypeAnnot,pos) =>
+           map(fn x => evalFunArg(FunName farg, vtab, ftab, pos, aargs))
+           | _ => raise Error("Map argument requires a list:" ^ppval arr, pos)
+    end
 
   | evalExp ( Reduce (farg, ne, arrexp, tp, pos), vtab, ftab ) =
     raise Fail "Unimplemented feature reduce"
