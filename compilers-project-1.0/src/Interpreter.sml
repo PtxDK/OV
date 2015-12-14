@@ -109,7 +109,11 @@ fun bindParams ([], [], fid, pd, pc) = SymTab.empty()
                                ppVal 0 a, pc)
         end
 
-
+fun myfoldl f init l =
+    case l of
+        [] => init
+     |  [x] => f(x,init)
+     | x::xs => foldl f (f(x,init)) xs
 
 
 (* Interpreter for Fasto expressions:
@@ -285,7 +289,7 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
         val rtp = rtpFunArg(farg, ftab, pos)
     in case arr of
            ArrayVal (elements, _) =>
-           foldl (fn (t,x) =>
+           myfoldl (fn (t,x) =>
                      evalFunArg(farg, vtab, ftab, pos, [t,x])) net elements
          | _ => raise Error("Reduce argument requires a list",pos)
     end
