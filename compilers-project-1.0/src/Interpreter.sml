@@ -110,6 +110,8 @@ fun bindParams ([], [], fid, pd, pc) = SymTab.empty()
         end
 
 
+
+
 (* Interpreter for Fasto expressions:
     1. vtab holds bindings between variable names and
        their interpreted value (Fasto.Value).
@@ -275,10 +277,19 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
            ArrayVal (map (fn x => evalFunArg(farg, vtab, ftab, pos, [x])) elements, rtp)
            | _ => raise Error("Map argument requires a list:", pos)
     end
-    (* raise Fail "Unimplemented feature reduce" *)
-
+    
+        (*REMEMBER TO USE OWN FOLDL*)
   | evalExp ( Reduce (farg, ne, arrexp, tp, pos), vtab, ftab ) =
-    raise Fail "Unimplemented feature reduce"
+    let val arr = evalExp(arrexp, vtab, ftab)
+        val net = evalExp(ne, vtab, ftab)
+        val rtp = rtpFunArg(farg, ftab, pos)
+    in case arr of
+           ArrayVal (elements, _) =>
+           foldl (fn (t,x) =>
+                     evalFunArg(farg, vtab, ftab, pos, [t,x])) net elements
+         | _ => raise Error("Reduce argument requires a list",pos)
+    end
+
 
   | evalExp ( Read (t,p), vtab, ftab ) =
         let val str =
