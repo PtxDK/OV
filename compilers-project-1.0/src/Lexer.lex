@@ -39,10 +39,6 @@
               | "fun"          => Parser.FUN pos
               | "true"         => Parser.TRUE pos
               | "false"        => Parser.FALSE pos
-              | "and"          => Parser.AND pos
-              | "or"           => Parser.OR pos
-              | "not"          => Parser.NOT pos
-              | "negate"       => Parser.NEGATE pos
               | "iota"         => Parser.IOTA pos
               | "map"          => Parser.MAP pos
               | "reduce"       => Parser.REDUCE pos
