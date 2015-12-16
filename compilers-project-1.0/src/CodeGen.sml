@@ -179,7 +179,12 @@ fun compileExp e vtable place =
         , Mips.ORI (place, place, makeConst (n mod 65536)) ]
   | Constant (CharVal c, pos) => [ Mips.LI (place, makeConst (ord c)) ]
 
-  | Constant (BoolVal b, pos) => raise Fail "Unimplemented feature boolean constants"
+  | Constant (BoolVal b, pos) =>
+    case compileExp ((Constant (BoolVal b, pos), pos)) vtable place of 
+      true => [ Mips.SW (place, 1) ]
+    | false => [ Mips.SW (place, 0) ]
+    | _ => raise Error ("Not BoolVal", pos)
+  (* raise Fail "Unimplemented feature boolean constants" *)
   
   (* Create/return a label here, collect all string literals of the program
      (in stringTable), and create them in the data section before the heap
