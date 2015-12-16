@@ -130,6 +130,7 @@ fun dynalloc (size_reg : string,
     in code1 @ code2 @ code3
     end
 
+
 (* Pushing arguments on the stack: *)
 (* For each register 'r' in 'rs', copy them to registers from
 'firstReg' and counting up. Return the full code and the next unused
@@ -148,7 +149,22 @@ fun applyRegs( fid: string,
       then raise Error("Number of arguments passed to "^fid^
                        " exceeds number of caller registers", pos)
       else move_code @ [ Mips.JAL(fid,caller_regs), Mips.MOVE(place, "2") ]
-  end
+    end
+
+
+fun applyFunArg (FunName s, args, vtab, place, pos) =
+    let
+      val tmp_reg = newName "temp_reg"
+    in
+      applyRegs(s, args, tmp_reg, pos)
+      @ [Mips.MOVE(place,tmp_reg)]
+    end
+
+  | applyFunArg ( Lambda (_, Params, body, pos),args,vtab,place,funpos) =
+  raise Error ("lamda function is not implemented",pos)
+
+
+
 
 (* Compile 'e' under bindings 'vtable', putting the result in its 'place'. *)
 fun compileExp e vtable place =
@@ -411,7 +427,7 @@ fun compileExp e vtable place =
           val code2 = compileExp e2 vtable t2
           val check2 = newName "check2"
           val trueLabel = newName "true"
-          in  code1 @
+          in  code1 @ code2 @
               [Mips.BEQ("1",t1,check2),
                Mips.LI(place, "0")]@
               [Mips.LABEL check2,
@@ -429,7 +445,7 @@ fun compileExp e vtable place =
           val check2 = newName "check2"
           val falseLabel = newName "false"
           val trueLabel = newName "true"
-          in  code1 @
+          in  code1 @ code2 @
               [Mips.BEQ("0",t1,check2),
                Mips.LI (place, "1")]@
               [Mips.LABEL check2,
@@ -533,12 +549,70 @@ fun compileExp e vtable place =
 
 
   | Map (farg, arr_exp, elem_type, ret_type, pos) =>
-(* raise Fail "Unimplemented feature map" *)
+    let
+	val elem_reg = newName "elem_reg"
+	val size_reg = newName "size_reg"
+        val arr_code = compileExp arr_exp vtable elem_reg
+	val checksize = [ Mips.LW (size_reg, elem_reg, "0") ]
+
+    val i_reg = newName "i_reg"
+	val res_reg = newName "res_reg"
+
+    (* The first part of an array is always a 4-byte int *)
+    val init_regs_in = [ Mips.ADDI (elem_reg, elem_reg, "4"),
+                         Mips.MOVE (i_reg, "0") ]
+    val init_regs_out = [ Mips.ADDI (res_reg, place, "4") ]
+
+	val loop_beg = newName "loop_beg_map"
+    val loop_end = newName "loop_end_map"
+    val tmp_reg = newName "tmp_reg"
+
+	val loop_header = [ Mips.LABEL (loop_beg)
+			  , Mips.SUB (tmp_reg, i_reg, size_reg)
+			  , Mips.BGEZ (tmp_reg, loop_end) ]
 
 
+	val loop_map_load = case getElemSize elem_type of
+	    One => Mips.LB (tmp_reg, elem_reg, "0")
+			   ::applyFunArg(farg, [tmp_reg], vtable, tmp_reg, pos)
+               @ [ Mips.ADDI (elem_reg, elem_reg, "1") ]
+	    | Four => Mips.LW (tmp_reg, elem_reg, "0")
+		       :: applyFunArg(farg, [tmp_reg], vtable, tmp_reg, pos)
+               @ [ Mips.ADDI (elem_reg, elem_reg, "4") ]
+
+    (* The return value is an array. To determine element type we must
+       check what type of elements the return value should contain. *)
+    val ret_elem_type = case ret_type of
+        Array t => t
+      | _ => raise Fail "Map return type must be an array."
+
+	val loop_map_store = case getElemSize ret_elem_type of
+        One => [ Mips.SB (tmp_reg, res_reg, "0")
+               , Mips.ADDI (res_reg, res_reg, "1") ]
+		| Four => [ Mips.SW (tmp_reg, res_reg, "0")
+		          , Mips.ADDI (res_reg, res_reg, "4") ]
+
+	val loop_footer = [ Mips.ADDI (i_reg, i_reg, "1")
+		              , Mips.J loop_beg
+		              , Mips.LABEL loop_end ]
+
+    in
+	arr_code
+	@ checksize
+	@ dynalloc (size_reg, place, ret_elem_type)
+	@ init_regs_in
+	@ init_regs_out
+    @ loop_header
+	@ loop_map_load
+	@ loop_map_store
+	@ loop_footer
+    end
+
+        
 (* STEPS TIL AT DESIGNE MAP:
   
   Map(f, arr, exp, vtable)
+
 
 1: Code_arr = compExp arr.exp vtable [in_reg]
 2: get the length of the input array
@@ -546,8 +620,8 @@ fun compileExp e vtable place =
     {LW (len_reg, in_reg, "0")}
 
 3:  code_3 = dynalloc (len_reg, place, rtp)
-4:  [ADDI (out_it, place, "4")]
-    ADDI (in_reg, in_reg, "4")
+4:  [ADDI (out_it, place, "4"),
+    ADDI (in_reg, in_reg, "4")]
 
 5: Loop: Read the current element of it_reg
          applyFunArg on the current element
