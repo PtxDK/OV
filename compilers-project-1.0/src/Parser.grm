@@ -20,15 +20,14 @@ open Fasto.UnknownTypes
 %token <(int*int)> IOTA MAP REDUCE
 
 
-
 %nonassoc ifprec letprec
+%nonassoc NOT
 %left OR
 %left AND
 %left DEQ LTH
 %left PLUS MINUS
 %left TIMES DIVIDE
-%left NOT
-%left NEGATE
+%nonassoc NEGATE
 
 
 %start Prog
