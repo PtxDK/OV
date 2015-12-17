@@ -245,29 +245,33 @@ and checkExp ftab vtab (exp : In.Exp)
     | In.Reduce (f, n_exp, arr_exp, _, pos)
       => let
     	    val (n_type, n_dec) = case checkExp ftab vtab n_exp of (* Return type of n *)
-    	    	t => t
+    	    	t => t (* n_type = type of first element given to reduce *)
 
-    	    val (e_type, e_dec) = case checkExp ftab vtab arr_exp of (*Return the type the array contains*)
-    	    	(Array e_type, e_dec) => (e_type, e_dec)
+    	    val (e_type, e_dec) = case checkExp ftab vtab arr_exp of (* Return the type the array contains *)
+    	    	(Array e_type, e_dec) => (e_type, e_dec) (* e_types is the type of the elements in array *)
     	    | _	=> raise Error ("Must be zero ", pos)
 
-    	    val (fname, ret_type, arg_types) = case checkFunArg (f, vtab, ftab, pos) of (*return type of ret_type*)
+    	    val (fname, ret_type, arg_types) = case checkFunArg (f, vtab, ftab, pos) of
     	    	(fname, ret_type, arg_types) => (fname, ret_type, arg_types)
 
     	  in
-    	  	
-    	  	if n_type <> e_type
-    	  		then raise Error ("Bad types ", pos)
-    	  	else
 
-	    	  	if n_type <> ret_type 
-	    	  		then raise Error ("Bad types ", pos)
+	    	  	if n_type <> e_type
+	    	  		then raise Error ("TypeError: Array type does not match arg type ", pos)
 	    	  	else
 
-		    	  	if foldl (fn (x, y) => n_type = x orelse y) false arg_types
-		    	  		then raise Error ("Bad types ", pos)
+		    	  	if n_type <> ret_type 
+		    	  		then raise Error ("TypeError: First Arg type does not match return of given function ", pos)
+		    	  	else
 
-		  	  		else (Array ret_type, Out.Reduce(fname, n_dec, e_dec, e_type, pos) )
+		    	  		( case arg_types of
+		    	  			[a,b] => if a = b andalso b = n_type then
+
+				    	  				(ret_type, Out.Reduce(fname, n_dec, e_dec, e_type, pos))
+
+					    	  		else raise Error ("TypeError: type of first arg does not match arg types ", pos)
+
+                  | _ => raise Error ("Reduce: not correct number of arguments in given function ", pos) )
 
     	  end
 

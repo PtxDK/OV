@@ -277,7 +277,7 @@ fun compileExp e vtable place =
 
   | Negate (e', pos) =>
         let val t1 = newName "Negate_var"
-        val code1 = compileExp e vtable t1
+        val code1 = compileExp e' vtable t1
     in  code1 @
         [Mips.SUB (place, "0", t1)]
     end
@@ -554,8 +554,8 @@ fun compileExp e vtable place =
     let
 	val elem_reg = newName "elem_reg"
 	val size_reg = newName "size_reg"
-        val arr_code = compileExp arr_exp vtable elem_reg
-	val checksize = [ Mips.LW (size_reg, elem_reg, "0") ]
+        val array_code = compileExp arr_exp vtable elem_reg
+	val sizecheck = [ Mips.LW (size_reg, elem_reg, "0") ]
 
     val i_reg = newName "i_reg"
 	val res_reg = newName "res_reg"
@@ -575,7 +575,7 @@ fun compileExp e vtable place =
 
 
 	val loop_map_load = case getElemSize elem_type of
-	    One => Mips.LB (tmp_reg, elem_reg, "0")
+	      One => Mips.LB (tmp_reg, elem_reg, "0")
 			   ::applyFunArg(farg, [tmp_reg], vtable, tmp_reg, pos)
                @ [ Mips.ADDI (elem_reg, elem_reg, "1") ]
 	    | Four => Mips.LW (tmp_reg, elem_reg, "0")
@@ -586,7 +586,7 @@ fun compileExp e vtable place =
        check what type of elements the return value should contain. *)
     val ret_elem_type = case ret_type of
         Array t => t
-      | _ => raise Fail "Map return type must be an array."
+      | _ => raise Fail "Return type of map must be array."
 
 	val loop_map_store = case getElemSize ret_elem_type of
         One => [ Mips.SB (tmp_reg, res_reg, "0")
@@ -599,8 +599,8 @@ fun compileExp e vtable place =
 		              , Mips.LABEL loop_end ]
 
     in
-	  arr_code
-	@ checksize
+	  array_code
+	@ sizecheck
 	@ dynalloc (size_reg, place, ret_elem_type)
 	@ init_regs_in
 	@ init_regs_out
