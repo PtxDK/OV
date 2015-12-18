@@ -423,39 +423,38 @@ fun compileExp e vtable place =
       end
 
   | And (e1, e2, pos) =>
-          let val t1 = newName "and_L"
-          val t2 = newName "and_R"
-          val code1 = compileExp e1 vtable t1
-          val code2 = compileExp e2 vtable t2
-          val check2 = newName "check2"
-          val trueLabel = newName "true"
-          in  code1 @ code2 @
-              [Mips.BEQ("1",t1,check2),
-               Mips.LI(place, "0")]@
-              [Mips.LABEL check2,
-               Mips.BEQ("1",t2,trueLabel),
-               Mips.LI(place, "0")]@
-              [Mips.LABEL trueLabel,
-               Mips.LI (place, "1")]
-          end
+    let val t1 = newName "and_L"
+        val t2 = newName "and_R"
+        val code1 = compileExp e1 vtable t1
+        val code2 = compileExp e2 vtable t2
+        val FalseLabel = newName "False"
+    in
+      [Mips.LI(place,"0")]@
+      code1 @
+      [Mips.BEQ(t1,"0",FalseLabel)]@
+      code2 @
+      [Mips.BEQ(t2,"0",FalseLabel)]@
+      [Mips.LI(place,"1")]@
+      [Mips.LABEL FalseLabel]
+    end
 
   | Or (e1, e2, pos) =>
-              let val t1 = newName "or_L"
-          val t2 = newName "or_R"
-          val code1 = compileExp e1 vtable t1
-          val code2 = compileExp e2 vtable t2
-          val check2 = newName "check2"
-          val falseLabel = newName "false"
-          val trueLabel = newName "true"
-          in  code1 @ code2 @
-              [Mips.BEQ("0",t1,check2),
-               Mips.LI (place, "1")]@
-              [Mips.LABEL check2,
-               Mips.BEQ("0",t2,falseLabel),
-               Mips.LI (place, "1")]@
-              [Mips.LABEL falseLabel,
-               Mips.LI (place, "0")]
-          end
+    let val t1 = newName "or_L"
+        val t2 = newName "or_R"
+        val code1 = compileExp e1 vtable t1
+        val code2 = compileExp e2 vtable t2
+        val TrueLabel = newName "true"
+    in [Mips.LI(place,"1")]@
+       code1 @
+       [Mips.LI("1","1")]@
+       [Mips.BEQ(t1,"1",TrueLabel)]@
+       code2 @
+       [Mips.LI("1","1")] @
+       [Mips.BEQ(t2,"1",TrueLabel)]@
+       [Mips.LI(place,"0")]@
+       [Mips.LABEL TrueLabel]
+    end
+
 
   (*
      1. generate code to compute the index
