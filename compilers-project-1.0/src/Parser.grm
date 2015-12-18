@@ -15,16 +15,17 @@ open Fasto.UnknownTypes
 %token <(int*int)> LPAR RPAR LBRACKET RBRACKET LCURLY RCURLY
 %token <(int*int)> COMMA
 %token <(int*int)> FUN READ WRITE
-%token <(int*int)> TRUE FALSE TIMES DIVIDE AND OR NOT NEGATE
+%token <(int*int)> TRUE FALSE TIMES DIVIDE AND OR NEGATE
 %token <(int*int)> RIGHTARROW FN FUNNAME
 %token <(int*int)> IOTA MAP REDUCE
+%token <(int*int)>NOT
 
 
 %nonassoc ifprec letprec
-%nonassoc NOT
 %left OR
 %left AND
 %left DEQ LTH
+%nonassoc NOT
 %left PLUS MINUS
 %left TIMES DIVIDE
 %nonassoc NEGATE

@@ -610,26 +610,6 @@ fun compileExp e vtable place =
     end
 
 
-(* STEPS TIL AT DESIGNE MAP:
-  
-  Map(f, arr, exp, vtable)
-
-
-1: Code_arr = compExp arr.exp vtable [in_reg]
-2: get the length of the input array
-
-    {LW (len_reg, in_reg, "0")}
-
-3:  code_3 = dynalloc (len_reg, place, rtp)
-4:  [ADDI (out_it, place, "4"),
-    ADDI (in_reg, in_reg, "4")]
-
-5: Loop: Read the current element of it_reg
-         applyFunArg on the current element
-         store result in the current element of out_it
-         increment it_reg, increment out_reg
-*)
-
   (* reduce(f, acc, {x1, x2, ...}) = f(..., f(x2, f(x1, acc))) *)
   | Reduce (binop, acc_exp, arr_exp, tp, pos) =>
     let

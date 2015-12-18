@@ -38,6 +38,7 @@
               | "char"         => Parser.CHAR pos
               | "fun"          => Parser.FUN pos
               | "true"         => Parser.TRUE pos
+              | "fn"           => Parser.FN pos
               | "false"        => Parser.FALSE pos
               | "iota"         => Parser.IOTA pos
               | "map"          => Parser.MAP pos
@@ -58,6 +59,8 @@ rule Token = parse
   | [`0`-`9`]+          { case Int.fromString (getLexeme lexbuf) of
                                NONE   => lexerError lexbuf "Bad integer"
                              | SOME i => Parser.NUM (i, getPos lexbuf) }
+  | "not"               { Parser.NOT    (getPos lexbuf) }
+
   | [`a`-`z` `A`-`Z`] [`a`-`z` `A`-`Z` `0`-`9` `_`]*
                         { keyword (getLexeme lexbuf,getPos lexbuf) }
   | `'` ([` ` `!` `#`-`&` `(`-`[` `]`-`~`] | `\`[` `-`~`]) `'`
@@ -77,14 +80,14 @@ rule Token = parse
   | `+`                 { Parser.PLUS   (getPos lexbuf) }
   | `-`                 { Parser.MINUS  (getPos lexbuf) }
   | `*`                 { Parser.TIMES  (getPos lexbuf) }
+  | "=>"             { Parser.RIGHTARROW(getPos lexbuf) }
   | `/`                 { Parser.DIVIDE (getPos lexbuf) }
   | "=="                { Parser.DEQ    (getPos lexbuf) }
   | `=`                 { Parser.EQ     (getPos lexbuf) }
   | `<`                 { Parser.LTH    (getPos lexbuf) }
   | "&&"                { Parser.AND    (getPos lexbuf) }
   | "||"                { Parser.OR     (getPos lexbuf) }
-  | "not"               { Parser.NOT    (getPos lexbuf) }
-  | "~"            { Parser.NEGATE  (getPos lexbuf) }
+  | "~"                { Parser.NEGATE  (getPos lexbuf) }
   | `(`                 { Parser.LPAR   (getPos lexbuf) }
   | `)`                 { Parser.RPAR   (getPos lexbuf) }
   | `[`                 { Parser.LBRACKET (getPos lexbuf) }

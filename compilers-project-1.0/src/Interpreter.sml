@@ -189,11 +189,15 @@ fun evalExp ( Constant (v,_), vtab, ftab ) = v
        | _ => raise Fail "Operand to or is not a boolean"
     )
 
-  | evalExp ( Not(e, pos), vtab, ftab ) =
-    (case evalExp(e, vtab, ftab) of
-         BoolVal true => BoolVal false
-       | BoolVal false => BoolVal true
-       | _ => raise Error ("Not requires a type of BoolVal", pos))
+  | evalExp ( Not(e1, pos), vtab, ftab ) =
+    let
+      val res1    = evalExp(e1, vtab, ftab)
+    in
+      case (res1) of
+          (BoolVal b1) => BoolVal (not b1)
+        | _  => invalidOperand "not on non-bool args: " (Bool) res1 pos
+    end
+
 
 
   | evalExp ( Negate(e, pos), vtab, ftab ) =
