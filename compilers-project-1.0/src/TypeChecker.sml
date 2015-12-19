@@ -237,7 +237,7 @@ and checkExp ftab vtab (exp : In.Exp)
             in
               case arg_types of
                 [t_in] => (if t_in = t_el
-                           then (Array ret_type, Out.Map(fname, e_dec, e_type, Array ret_type, pos))
+                           then (Array ret_type, Out.Map(fname, e_dec, e_type, ret_type, pos))
                            else raise Error ("The Array expression type does not match the function input type", pos))
               | _ => raise Error ("Map: function failed ", pos)
             end

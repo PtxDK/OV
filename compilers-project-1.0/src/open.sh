@@ -1,2 +1,2 @@
 #!/bin/bash
-subl Lexer.lex && subl Interpreter.sml && subl TypeChecker.sml && subl Parser.grm && subl CodeGen.sml
+subl Lexer.lex && subl Parser.grm && subl TypeChecker.sml && subl Interpreter.sml && subl CodeGen.sml

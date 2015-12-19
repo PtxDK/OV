@@ -583,9 +583,8 @@ fun compileExp e vtable place =
 
     (* The return value is an array. To determine element type we must
        check what type of elements the return value should contain. *)
-    val ret_elem_type = case ret_type of
-        Array t => t
-      | _ => raise Fail "Return type of map must be array."
+    val ret_elem_type = ret_type
+        
 
 	val loop_map_store = case getElemSize ret_elem_type of
         One => [ Mips.SB (tmp_reg, res_reg, "0")
