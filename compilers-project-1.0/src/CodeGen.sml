@@ -160,14 +160,22 @@ fun applyFunArg (FunName s, args, vtab, place, pos) :Mips.Prog =
       @ [Mips.MOVE(place,tmp_reg)]
     end
 
-  | applyFunArg ( Lambda (_, Params, body, pos),args,vtab,place,funpos) =
-  raise Error ("lamda function is not implemented",pos)
+  | applyFunArg ( Lambda (_, pars, body, pos),args,vtab,place,funpos) =
+    let
+      val tmp_reg = newName "temp_reg"
+      fun bindArgVtab (Param(fa,_)::fargs) (aa::aargs) vtab =
+            SymTab.bind fa aa (bindArgVtab fargs aargs vtab)
+        | bindArgVtab _ _ vtab = vtab
 
-
+      val vtab2 = bindArgVtab pars args vtab
+    in
+      compileExp body vtab2 tmp_reg
+      @ [Mips.MOVE(place,tmp_reg)]
+    end
 
 
 (* Compile 'e' under bindings 'vtable', putting the result in its 'place'. *)
-fun compileExp e vtable place =
+and compileExp e vtable place =
   case e of
       Constant (IntVal n, pos) =>
       if n < 0 then
@@ -547,8 +555,6 @@ fun compileExp e vtable place =
        @ loop_footer
     end
 
-
-
   | Map (farg, arr_exp, elem_type, ret_type, pos)=>
     let
 	val elem_reg = newName "elem_reg"
@@ -572,7 +578,6 @@ fun compileExp e vtable place =
 			  , Mips.SUB (tmp_reg, i_reg, size_reg)
 			  , Mips.BGEZ (tmp_reg, loop_end) ]
 
-
 	val loop_map_load = case getElemSize elem_type of
 	      One => Mips.LB (tmp_reg, elem_reg, "0")
 			   ::applyFunArg(farg, [tmp_reg], vtable, tmp_reg, pos)
@@ -585,7 +590,6 @@ fun compileExp e vtable place =
        check what type of elements the return value should contain. *)
     val ret_elem_type = ret_type
         
-
 	val loop_map_store = case getElemSize ret_elem_type of
         One => [ Mips.SB (tmp_reg, res_reg, "0")
                , Mips.ADDI (res_reg, res_reg, "1") ]
@@ -630,7 +634,6 @@ fun compileExp e vtable place =
                    | Four => [ Mips.ADDI (bytes, "0", "4") ]
 
       val tmp_reg = newName "tmp_reg"
-
       val loop_beg = newName "loop_beg_reduce"
       val loop_end = newName "loop_end_reduce"
 

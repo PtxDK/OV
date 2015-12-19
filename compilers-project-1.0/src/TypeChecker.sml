@@ -260,18 +260,18 @@ and checkExp ftab vtab (exp : In.Exp)
 	    	  		then raise Error ("TypeError: Array type does not match arg type ", pos)
 	    	  	else
 
-		    	  	if n_type <> ret_type 
-		    	  		then raise Error ("TypeError: First Arg type does not match return of given function ", pos)
-		    	  	else
+	    	  	if n_type <> ret_type 
+	    	  		then raise Error ("TypeError: First Arg type does not match return of given function ", pos)
+	    	  	else
 
-		    	  		( case arg_types of
-		    	  			[a,b] => if a = b andalso b = n_type then
+    	  		(case arg_types of
+    	  			[a,b] => if a = b andalso b = n_type then
 
-				    	  				(ret_type, Out.Reduce(fname, n_dec, e_dec, e_type, pos))
+		    	  				(ret_type, Out.Reduce(fname, n_dec, e_dec, e_type, pos))
 
-					    	  		else raise Error ("TypeError: type of first arg does not match arg types ", pos)
+			    	  		else raise Error ("TypeError: type of first arg does not match arg types ", pos)
 
-                  | _ => raise Error ("Reduce: not correct number of arguments in given function ", pos) )
+              | _ => raise Error ("Reduce: not correct number of arguments in given function ", pos) )
 
     	  end
 
