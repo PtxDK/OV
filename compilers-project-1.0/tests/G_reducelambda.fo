@@ -1,0 +1,10 @@
+fun bool writeln (bool b) =
+    let m = write(b) in let n = write("\n") in b
+
+fun bool test () =
+    
+    let n = reduce(fn int (int a, int b) => a + b, 1000, {300, 10, 20, 7}) in writeln(n == 1337)
+
+fun int main () =
+    let t = test() in
+    0
