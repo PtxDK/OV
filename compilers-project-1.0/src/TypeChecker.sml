@@ -249,7 +249,7 @@ and checkExp ftab vtab (exp : In.Exp)
 
     	    val (e_type, e_dec) = case checkExp ftab vtab arr_exp of (* Return the type the array contains *)
     	    	(Array e_type, e_dec) => (e_type, e_dec) (* e_types is the type of the elements in array *)
-    	    | _	=> raise Error ("Must be zero ", pos)
+    	    | _	=> raise Error ("Must be Array ", pos)
 
     	    val (fname, ret_type, arg_types) = case checkFunArg (f, vtab, ftab, pos) of
     	    	(fname, ret_type, arg_types) => (fname, ret_type, arg_types)
@@ -260,7 +260,7 @@ and checkExp ftab vtab (exp : In.Exp)
 	    	  		then raise Error ("TypeError: Array type does not match arg type ", pos)
 	    	  	else
 
-	    	  	if n_type <> ret_type 
+	    	  	if n_type <> ret_type
 	    	  		then raise Error ("TypeError: First Arg type does not match return of given function ", pos)
 	    	  	else
 
