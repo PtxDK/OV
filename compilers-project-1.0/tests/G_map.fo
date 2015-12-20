@@ -1,6 +1,7 @@
 fun bool writeln (bool b) =
     let m = write(b) in let n = write("\n") in b
 
+fun int g (int n) = n + n + 1
 fun bool test () =
     let a = map(g, iota(5)) in writeln
     (
