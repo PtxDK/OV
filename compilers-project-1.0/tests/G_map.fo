@@ -1,0 +1,16 @@
+fun bool writeln (bool b) =
+    let m = write(b) in let n = write("\n") in b
+
+fun bool test () =
+    let a = map(g, iota(5)) in writeln
+    (
+        a[0] == 1 &&
+        a[1] == 3 &&
+        a[2] == 5 &&
+        a[3] == 7 &&
+        a[4] == 9
+    )
+
+fun int main () =
+    let t = test() in
+    0
