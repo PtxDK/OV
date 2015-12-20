@@ -1,0 +1,9 @@
+fun bool writeln (bool b) =
+    let m = write(b) in let n = write("\n") in b
+
+fun bool test () =
+    writeln(not (not (true)))
+
+fun int main () =
+    let t = test() in
+    0
