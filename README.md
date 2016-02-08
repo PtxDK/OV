@@ -1,8 +1,6 @@
 # OV Reporsitory
 Our "Introduction to Compilers(OV)" Group Project.
 
-#### Link til Live Rapport Edit: https://www.overleaf.com/3757030hphgsx
-
 ### How To Use Git with GitHub
 
 ###### Install Git Package on Debian
